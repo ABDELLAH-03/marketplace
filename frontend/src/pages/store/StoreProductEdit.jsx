@@ -30,7 +30,7 @@ export default function StoreProductEdit() {
           stock: p.stock || '',
           category: p.category?.id || '',
         });
-        if (p.image) setPreview(`http://localhost:8000${p.image}`);
+        if (p.image) setPreview(`${import.meta.env.VITE_API_URL}${p.image}`);
       })
       .catch(() => setError('Produit introuvable.'))
       .finally(() => setFetching(false));

@@ -51,7 +51,7 @@ function OrderCard({ order, onAction, processingId, actionLabel, actionColor, ba
                   <div className="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden flex-shrink-0">
                     {item.product?.image ? (
                       <img
-                        src={item.product.image.startsWith('http') ? item.product.image : `http://localhost:8000${item.product.image}`}
+                        src={item.product.image.startsWith('http') ? item.product.image : `${import.meta.env.VITE_API_URL}${item.product.image}`}
                         alt={item.product?.name}
                         className="w-full h-full object-cover"
                       />

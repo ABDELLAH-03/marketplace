@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage';
 
 import PublicShopLayout from './pages/public/PublicShopLayout';
 import PublicShopPage from './pages/public/PublicShopPage';
+import PublicProductDetail from './pages/public/PublicProductDetail';
 
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -25,6 +26,7 @@ import ClientLayout from './pages/client/ClientLayout';
 import ShopPage from './pages/client/ShopPage';
 import CartPage from './pages/client/CartPage';
 import OrdersPage from './pages/client/OrdersPage';
+import ClientProductDetail from './pages/client/ClientProductDetail';
 
 import PackerLayout from './pages/packer/PackerLayout';
 import PackerOrders from './pages/packer/PackerOrders';
@@ -49,6 +51,7 @@ function App() {
           {/* Public — page d'accueil */}
           <Route path="/" element={<PublicShopLayout />}>
             <Route index element={<PublicShopPage />} />
+            <Route path="product/:id" element={<PublicProductDetail />} />
           </Route>
 
           {/* Public */}
@@ -125,6 +128,7 @@ function App() {
             <Route index element={<ShopPage />} />
             <Route path="cart" element={<CartPage />} />
             <Route path="orders" element={<OrdersPage />} />
+            <Route path="product/:id" element={<ClientProductDetail />} />
           </Route>
 
           <Route path="/unauthorized" element={<PlaceholderPage title="Accès non autorisé" />} />

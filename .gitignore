@@ -1,0 +1,22 @@
+# Python
+env/
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Environment
+.env
+frontend/.env
+
+# Database
+*.sqlite3
+
+# Build
+dist/
+build/
+
+# Media cache
+*.log

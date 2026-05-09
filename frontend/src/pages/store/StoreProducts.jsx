@@ -81,7 +81,7 @@ export default function StoreProducts() {
               <div className="h-40 bg-gray-800 relative overflow-hidden">
                 {product.image ? (
                   <img
-                    src={product.image.startsWith('http') ? product.image : `http://localhost:8000${product.image}`}                    alt={product.name}
+                    src={product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_API_URL}${product.image}`}                    alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
