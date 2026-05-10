@@ -29,6 +29,48 @@ function Field({ label, children }) {
   );
 }
 
+// ✅ Defined OUTSIDE AdminProducts so React never remounts it on re-render
+function ProductForm({ form, setForm, stores, categories, formError, saving, onSubmit, onCancel, submitLabel }) {
+  const handleField = (k) => (e) => setForm((prev) => ({ ...prev, [k]: e.target.value }));
+  const handleFile  = (e) => setForm((prev) => ({ ...prev, image: e.target.files[0] }));
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      {formError && <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{formError}</p>}
+      <Field label="Nom du produit">
+        <input className={inputCls} value={form.name} onChange={handleField('name')} placeholder="Nom du produit" required />
+      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Prix (MAD)">
+          <input className={inputCls} type="number" step="0.01" min="0" value={form.price} onChange={handleField('price')} placeholder="0.00" required />
+        </Field>
+        <Field label="Stock">
+          <input className={inputCls} type="number" min="0" value={form.stock} onChange={handleField('stock')} placeholder="0" required />
+        </Field>
+      </div>
+      <Field label="Boutique">
+        <select className={inputCls} value={form.store} onChange={handleField('store')} required>
+          <option value="">-- Sélectionner une boutique --</option>
+          {stores.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
+      </Field>
+      <Field label="Catégorie (optionnelle)">
+        <select className={inputCls} value={form.category} onChange={handleField('category')}>
+          <option value="">-- Aucune catégorie --</option>
+          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      </Field>
+      <Field label="Image du produit">
+        <input type="file" accept="image/*" onChange={handleFile} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-gray-400 text-sm file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-amber-400 file:text-gray-950 file:font-medium hover:file:bg-amber-300 cursor-pointer" />
+      </Field>
+      <div className="flex justify-end gap-3 pt-2">
+        <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl bg-gray-800 text-gray-300 text-sm hover:bg-gray-700 transition-colors">Annuler</button>
+        <button type="submit" disabled={saving} className="px-4 py-2 rounded-xl bg-amber-400 text-gray-950 text-sm font-semibold hover:bg-amber-300 disabled:opacity-50 transition-colors">{saving ? 'Enregistrement...' : submitLabel}</button>
+      </div>
+    </form>
+  );
+}
+
 const EMPTY_FORM = { name: '', price: '', stock: '', store: '', category: '', image: null };
 
 export default function AdminProducts() {
@@ -128,49 +170,12 @@ export default function AdminProducts() {
     } finally { setSaving(false); }
   };
 
-  const f = (k) => (e) => setForm({ ...form, [k]: e.target.value });
-  const fFile = (e) => setForm({ ...form, image: e.target.files[0] });
-
   const filtered = products.filter((p) =>
     p.name?.toLowerCase().includes(search.toLowerCase()) ||
     p.store_detail?.name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const ProductForm = ({ onSubmit, submitLabel }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      {formError && <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{formError}</p>}
-      <Field label="Nom du produit">
-        <input className={inputCls} value={form.name} onChange={f('name')} placeholder="Nom du produit" required />
-      </Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Prix (MAD)">
-          <input className={inputCls} type="number" step="0.01" min="0" value={form.price} onChange={f('price')} placeholder="0.00" required />
-        </Field>
-        <Field label="Stock">
-          <input className={inputCls} type="number" min="0" value={form.stock} onChange={f('stock')} placeholder="0" required />
-        </Field>
-      </div>
-      <Field label="Boutique">
-        <select className={inputCls} value={form.store} onChange={f('store')} required>
-          <option value="">-- Sélectionner une boutique --</option>
-          {stores.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </select>
-      </Field>
-      <Field label="Catégorie (optionnelle)">
-        <select className={inputCls} value={form.category} onChange={f('category')}>
-          <option value="">-- Aucune catégorie --</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
-      </Field>
-      <Field label="Image du produit">
-        <input type="file" accept="image/*" onChange={fFile} className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-gray-400 text-sm file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-amber-400 file:text-gray-950 file:font-medium hover:file:bg-amber-300 cursor-pointer" />
-      </Field>
-      <div className="flex justify-end gap-3 pt-2">
-        <button type="button" onClick={() => { setShowCreate(false); setEditProduct(null); }} className="px-4 py-2 rounded-xl bg-gray-800 text-gray-300 text-sm hover:bg-gray-700 transition-colors">Annuler</button>
-        <button type="submit" disabled={saving} className="px-4 py-2 rounded-xl bg-amber-400 text-gray-950 text-sm font-semibold hover:bg-amber-300 disabled:opacity-50 transition-colors">{saving ? 'Enregistrement...' : submitLabel}</button>
-      </div>
-    </form>
-  );
+  const closeForm = () => { setShowCreate(false); setEditProduct(null); };
 
   return (
     <div>
@@ -290,12 +295,24 @@ export default function AdminProducts() {
 
       {showCreate && (
         <Modal title="Ajouter un produit" onClose={() => setShowCreate(false)}>
-          <ProductForm onSubmit={handleCreate} submitLabel="Créer" />
+          <ProductForm
+            form={form} setForm={setForm}
+            stores={stores} categories={categories}
+            formError={formError} saving={saving}
+            onSubmit={handleCreate} onCancel={closeForm}
+            submitLabel="Créer"
+          />
         </Modal>
       )}
       {editProduct && (
         <Modal title="Modifier le produit" onClose={() => setEditProduct(null)}>
-          <ProductForm onSubmit={handleEdit} submitLabel="Enregistrer" />
+          <ProductForm
+            form={form} setForm={setForm}
+            stores={stores} categories={categories}
+            formError={formError} saving={saving}
+            onSubmit={handleEdit} onCancel={closeForm}
+            submitLabel="Enregistrer"
+          />
         </Modal>
       )}
     </div>
